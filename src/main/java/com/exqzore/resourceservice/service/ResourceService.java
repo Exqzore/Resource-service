@@ -14,7 +14,10 @@ import com.exqzore.resourceservice.model.domain.ResourceInfo;
 import com.exqzore.resourceservice.repository.ResourceDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -37,10 +40,14 @@ public class ResourceService {
   @Value("${cloud.aws.bucket.name}")
   private String bucketName;
 
+  private final KafkaTemplate<String, byte[]> kafkaTemplate;
+
   @Autowired
-  public ResourceService(AmazonS3 s3Client, ResourceDao resourceDao) {
+  public ResourceService(
+      AmazonS3 s3Client, ResourceDao resourceDao, KafkaTemplate<String, byte[]> kafkaTemplate) {
     this.s3Client = s3Client;
     this.resourceDao = resourceDao;
+    this.kafkaTemplate = kafkaTemplate;
   }
 
   public EntityBase uploadFile(MultipartFile file) {
@@ -75,6 +82,8 @@ public class ResourceService {
       File fileObj = convertMultiPartFileToFile(file);
       s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
       fileObj.delete();
+
+      kafkaTemplate.send("topic", Long.toString(resourceInfo.getId()).getBytes());
     } else {
       throw new InternalServerException(INTERNAL_SERVER_ERROR);
     }
