@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: root
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
+amazon:
+  s3:
+    bucket-name: test-s3-bucket-for-tests
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAZ5BIJKHECMGQZ34Q
+      secret-key: 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
+    bucket:
+      name: test-s3-bucket-for-tests
