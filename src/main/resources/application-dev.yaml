@@ -27,8 +27,8 @@ spring:
 cloud:
   aws:
     credentials:
-      access-key: AKIAZ5BIJKHEKH3BB64N
-      secret-key: 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
+      access-key: AKIAZ5BIJKHECMGQZ34Q
+      secret-key: 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
 #    region: us-east-1
 #    endpoint: http://localhost:4566
     bucket:
